@@ -5,9 +5,15 @@ on:
   pull_request:
     branches: [ "main" ]
 
+env:
+  DOCKER_REPO: file2md
+
 jobs:
-  build:
+  build-and-push:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
     steps:
     - uses: actions/checkout@v4
     
@@ -17,27 +23,48 @@ jobs:
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
     
-    - name: Get short Git commit hash and set image tags
-      id: image_tags
+    - name: Log in to GitHub Container Registry
+      uses: docker/login-action@v2
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+    
+    - name: Generate tags
+      id: tags
       run: |
         COMMIT_HASH=$(git rev-parse --short HEAD)
-        IMAGE_TAG=$(date +%s)
+        TIMESTAMP=$(date +%s)
         echo "commit_hash=$COMMIT_HASH" >> $GITHUB_OUTPUT
-        echo "image_tag=$IMAGE_TAG" >> $GITHUB_OUTPUT
+        echo "timestamp=$TIMESTAMP" >> $GITHUB_OUTPUT
     
-    - name: Build the Docker image
+    - name: Build Docker image
+      env:
+        COMMIT_HASH: ${{ steps.tags.outputs.commit_hash }}
+        TIMESTAMP: ${{ steps.tags.outputs.timestamp }}
       run: |
-        COMMIT_HASH=${{ steps.image_tags.outputs.commit_hash }}
-        IMAGE_TAG=${{ steps.image_tags.outputs.image_tag }}
         docker build . --file Dockerfile \
-          --tag maheshrijal/file2md:$IMAGE_TAG \
-          --tag maheshrijal/file2md:$COMMIT_HASH \
-          --tag maheshrijal/file2md:latest
+          --tag ${{ secrets.DOCKER_USERNAME }}/${{ env.DOCKER_REPO }}:$TIMESTAMP \
+          --tag ${{ secrets.DOCKER_USERNAME }}/${{ env.DOCKER_REPO }}:$COMMIT_HASH \
+          --tag ${{ secrets.DOCKER_USERNAME }}/${{ env.DOCKER_REPO }}:latest \
+          --tag ghcr.io/${{ github.repository_owner }}/${{ env.DOCKER_REPO }}:$TIMESTAMP \
+          --tag ghcr.io/${{ github.repository_owner }}/${{ env.DOCKER_REPO }}:$COMMIT_HASH \
+          --tag ghcr.io/${{ github.repository_owner }}/${{ env.DOCKER_REPO }}:latest
     
-    - name: Push the Docker image to Docker Hub
+    - name: Push to Docker Hub
+      env:
+        COMMIT_HASH: ${{ steps.tags.outputs.commit_hash }}
+        TIMESTAMP: ${{ steps.tags.outputs.timestamp }}
       run: |
-        COMMIT_HASH=${{ steps.image_tags.outputs.commit_hash }}
-        IMAGE_TAG=${{ steps.image_tags.outputs.image_tag }}
-        docker push maheshrijal/file2md:$IMAGE_TAG
-        docker push maheshrijal/file2md:$COMMIT_HASH
-        docker push maheshrijal/file2md:latest
+        docker push ${{ secrets.DOCKER_USERNAME }}/${{ env.DOCKER_REPO }}:$TIMESTAMP
+        docker push ${{ secrets.DOCKER_USERNAME }}/${{ env.DOCKER_REPO }}:$COMMIT_HASH
+        docker push ${{ secrets.DOCKER_USERNAME }}/${{ env.DOCKER_REPO }}:latest
+    
+    - name: Push to GitHub Container Registry
+      env:
+        COMMIT_HASH: ${{ steps.tags.outputs.commit_hash }}
+        TIMESTAMP: ${{ steps.tags.outputs.timestamp }}
+      run: |
+        docker push ghcr.io/${{ github.repository_owner }}/${{ env.DOCKER_REPO }}:$TIMESTAMP
+        docker push ghcr.io/${{ github.repository_owner }}/${{ env.DOCKER_REPO }}:$COMMIT_HASH
+        docker push ghcr.io/${{ github.repository_owner }}/${{ env.DOCKER_REPO }}:latest
