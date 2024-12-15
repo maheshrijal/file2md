@@ -3,7 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>File to Markdown Converter</title>
+    <meta name="description" content="Convert Word, PDF, PowerPoint, Excel, and other file formats to Markdown. Free online file converter supporting DOCX, PPTX, XLSX, PDF, HTML, and more.">
+    <meta name="keywords" content="markdown converter, file converter, word to markdown, pdf to markdown, excel to markdown, powerpoint to markdown, document conversion">
+    <meta name="robots" content="index, follow">
+    <meta property="og:title" content="File to Markdown Converter - Convert Documents to Markdown">
+    <meta property="og:description" content="Free online tool to convert Word, PDF, PowerPoint, Excel, and other files to Markdown format. Supports multiple file types including DOCX, PDF, PPTX, XLSX.">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="File to Markdown Converter">
+    <title>File to Markdown Converter - Convert Documents to Markdown Format</title>
     
     <!-- Bootstrap CSS -->
     <link href="https://cdn.replit.com/agent/bootstrap-agent-dark-theme.min.css" rel="stylesheet">
@@ -11,6 +18,29 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <!-- Custom CSS -->
     <link href="{{ url_for('static', filename='css/custom.css') }}" rel="stylesheet">
+<!-- JSON-LD structured data -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "File to Markdown Converter",
+        "description": "Convert various file formats including Word, PDF, PowerPoint, Excel to Markdown format.",
+        "applicationCategory": "DocumentConverter",
+        "operatingSystem": "Any",
+        "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "USD"
+        },
+        "featureList": [
+            "Convert DOCX to Markdown",
+            "Convert PDF to Markdown",
+            "Convert PPTX to Markdown",
+            "Convert XLSX to Markdown",
+            "Convert HTML to Markdown"
+        ]
+    }
+    </script>
 </head>
 <body>
     <div class="container py-5">
@@ -19,11 +49,21 @@
         <div class="row justify-content-center">
             <div class="col-md-8">
                 <!-- File Upload Area -->
-                <div class="upload-area mb-4 p-5 rounded text-center" id="dropZone">
-                    <i class="fas fa-cloud-upload-alt fa-3x mb-3"></i>
-                    <h3>Drag & Drop or Click to Upload</h3>
-                    <p class="text-muted">Supported formats: PDF, PPTX, DOCX, XLSX, Images, Audio, HTML, CSV, JSON, XML</p>
-                    <input type="file" id="fileInput" class="d-none">
+                <div class="upload-area mb-4 p-5 rounded text-center" id="dropZone" 
+                     role="button" 
+                     aria-label="Upload file area. Click or drag and drop your file here"
+                     tabindex="0">
+                    <i class="fas fa-cloud-upload-alt fa-3x mb-3" aria-hidden="true"></i>
+                    <h2>Drag & Drop or Click to Upload</h2>
+                    <p class="text-muted">
+                        Supported formats: 
+                        <span class="supported-formats">
+                            PDF, PPTX, DOCX, XLSX, Images, Audio, HTML, CSV, JSON, XML
+                        </span>
+                    </p>
+                    <input type="file" id="fileInput" class="d-none" 
+                           aria-label="File input"
+                           accept=".pdf,.docx,.pptx,.xlsx,.png,.jpg,.jpeg,.gif,.mp3,.wav,.html,.csv,.json,.xml">
                 </div>
 
                 <!-- Progress Bar -->

@@ -2,11 +2,11 @@ name: Docker CI
 on:
   push:
     branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
+  release:
+    types: [created]
 
 env:
-  DOCKER_REPO: file2md
+  DOCKER_REPO: ${{ github.event.repository.name }}
 
 jobs:
   build-and-push:
@@ -35,36 +35,45 @@ jobs:
       run: |
         COMMIT_HASH=$(git rev-parse --short HEAD)
         TIMESTAMP=$(date +%s)
+        RELEASE_TAG=${GITHUB_REF#refs/tags/}
         echo "commit_hash=$COMMIT_HASH" >> $GITHUB_OUTPUT
         echo "timestamp=$TIMESTAMP" >> $GITHUB_OUTPUT
+        echo "release_tag=$RELEASE_TAG" >> $GITHUB_OUTPUT
     
     - name: Build Docker image
       env:
         COMMIT_HASH: ${{ steps.tags.outputs.commit_hash }}
         TIMESTAMP: ${{ steps.tags.outputs.timestamp }}
+        RELEASE_TAG: ${{ steps.tags.outputs.release_tag }}
       run: |
         docker build . --file Dockerfile \
           --tag ${{ secrets.DOCKER_USERNAME }}/${{ env.DOCKER_REPO }}:$TIMESTAMP \
           --tag ${{ secrets.DOCKER_USERNAME }}/${{ env.DOCKER_REPO }}:$COMMIT_HASH \
           --tag ${{ secrets.DOCKER_USERNAME }}/${{ env.DOCKER_REPO }}:latest \
+          --tag ${{ secrets.DOCKER_USERNAME }}/${{ env.DOCKER_REPO }}:$RELEASE_TAG \
           --tag ghcr.io/${{ github.repository_owner }}/${{ env.DOCKER_REPO }}:$TIMESTAMP \
           --tag ghcr.io/${{ github.repository_owner }}/${{ env.DOCKER_REPO }}:$COMMIT_HASH \
-          --tag ghcr.io/${{ github.repository_owner }}/${{ env.DOCKER_REPO }}:latest
+          --tag ghcr.io/${{ github.repository_owner }}/${{ env.DOCKER_REPO }}:latest \
+          --tag ghcr.io/${{ github.repository_owner }}/${{ env.DOCKER_REPO }}:$RELEASE_TAG
     
     - name: Push to Docker Hub
       env:
         COMMIT_HASH: ${{ steps.tags.outputs.commit_hash }}
         TIMESTAMP: ${{ steps.tags.outputs.timestamp }}
+        RELEASE_TAG: ${{ steps.tags.outputs.release_tag }}
       run: |
         docker push ${{ secrets.DOCKER_USERNAME }}/${{ env.DOCKER_REPO }}:$TIMESTAMP
         docker push ${{ secrets.DOCKER_USERNAME }}/${{ env.DOCKER_REPO }}:$COMMIT_HASH
         docker push ${{ secrets.DOCKER_USERNAME }}/${{ env.DOCKER_REPO }}:latest
+        docker push ${{ secrets.DOCKER_USERNAME }}/${{ env.DOCKER_REPO }}:$RELEASE_TAG
     
     - name: Push to GitHub Container Registry
       env:
         COMMIT_HASH: ${{ steps.tags.outputs.commit_hash }}
         TIMESTAMP: ${{ steps.tags.outputs.timestamp }}
+        RELEASE_TAG: ${{ steps.tags.outputs.release_tag }}
       run: |
         docker push ghcr.io/${{ github.repository_owner }}/${{ env.DOCKER_REPO }}:$TIMESTAMP
         docker push ghcr.io/${{ github.repository_owner }}/${{ env.DOCKER_REPO }}:$COMMIT_HASH
         docker push ghcr.io/${{ github.repository_owner }}/${{ env.DOCKER_REPO }}:latest
+        docker push ghcr.io/${{ github.repository_owner }}/${{ env.DOCKER_REPO }}:$RELEASE_TAG

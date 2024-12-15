@@ -1,6 +1,13 @@
 # file2md
+<div align="center">
 
-A web-based file converter that transforms various file formats into Markdown using the [Microsoft MarkItDown](https://github.com/microsoft/markitdown) library. This tool leverages the powerful MarkItDown library to provide accurate and reliable file conversions.
+![GitHub Tag](https://img.shields.io/github/v/tag/maheshrijal/file2md) 
+![GitHub License](https://img.shields.io/github/license/maheshrijal/file2md) 
+[![Docker CI](https://github.com/maheshrijal/file2md/actions/workflows/docker-image.yml/badge.svg?branch=main)](https://github.com/maheshrijal/file2md/actions/workflows/docker-image.yml)
+
+</div>
+
+A [web-based](https://file2md.maheshrijal.com) file converter that transforms various file formats into Markdown using the [Microsoft MarkItDown](https://github.com/microsoft/markitdown) library. This tool leverages the powerful MarkItDown library to provide accurate and reliable file conversions.
 
 ## Supported Formats
 
@@ -16,11 +23,20 @@ A web-based file converter that transforms various file formats into Markdown us
 
 ## Running the Application
 
-### Running with Docker
+```bash
+docker run -p 5000:5000 maheshrijal/file2md
+```
 
-1. Run the container:
-   ```bash
-   docker run -p 5000:5000 maheshrijal/file2md
-   ```
+or
 
-2. Open your browser and navigate to `http://localhost:5000`
+```bash
+docker run -p 5000:5000 ghcr.io/maheshrijal/file2md
+```
+
+## Access the Application
+
+Open your browser and go to:
+
+```
+http://localhost:5000
+```
