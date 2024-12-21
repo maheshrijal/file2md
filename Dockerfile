@@ -1,6 +1,5 @@
-FROM python:3.11-slim
-
-LABEL description="A web-based file converter that transforms various file formats into Markdown."
+# Build stage
+FROM python:3.11-slim as builder
 
 WORKDIR /app
 
@@ -14,11 +13,17 @@ RUN pip install --no-cache-dir poetry && \
     poetry config virtualenvs.create false && \
     poetry install --no-interaction --no-ansi
 
+# Runtime stage
+FROM python:3.11-slim
+
+WORKDIR /app
+
+COPY --from=builder /usr/local/lib/python3.11/site-packages/ /usr/local/lib/python3.11/site-packages/
 COPY . .
 
-ENV FLASK_APP=app.py
-ENV FLASK_ENV=development
-ENV PYTHONUNBUFFERED=1
+ENV FLASK_APP=app.py \
+    FLASK_ENV=development \
+    PYTHONUNBUFFERED=1
 
 EXPOSE 5000
 
