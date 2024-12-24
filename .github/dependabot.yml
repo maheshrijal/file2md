@@ -8,5 +8,5 @@ updates:
       - "dependencies"
       - "python"
     reviewers:
-      - "owner"
+      - "maheshrijal"
     open-pull-requests-limit: 10
