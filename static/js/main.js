@@ -6,9 +6,18 @@ document.addEventListener('DOMContentLoaded', function() {
     const previewArea = document.getElementById('previewArea');
     const markdownContent = document.getElementById('markdownContent');
     const downloadBtn = document.getElementById('downloadBtn');
+    const copyBtn = document.getElementById('copyBtn');
     const alertArea = document.getElementById('alertArea');
+    const themeToggle = document.getElementById('themeToggle');
+    const featureSection = document.getElementById('featureSection');
 
-    // Handle drag and drop events
+    // Initialize theme
+    initializeTheme();
+
+    // Theme toggle functionality
+    themeToggle.addEventListener('click', toggleTheme);
+
+    // Drag and drop events
     ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
         dropZone.addEventListener(eventName, preventDefaults, false);
     });
@@ -30,32 +39,94 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Handle file drop
+    // File drop
     dropZone.addEventListener('drop', (e) => {
         const file = e.dataTransfer.files[0];
-        handleFile(file);
+        if (file) {
+            handleFile(file);
+        }
     });
 
-    // Handle file selection via click
+    // File selection via click
     dropZone.addEventListener('click', () => {
         fileInput.click();
     });
 
-    fileInput.addEventListener('change', (e) => {
-        const file = e.target.files[0];
-        handleFile(file);
+    // Keyboard accessibility
+    dropZone.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            fileInput.click();
+        }
     });
 
+    fileInput.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            handleFile(file);
+        }
+    });
+
+    // Theme functions
+    function initializeTheme() {
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        setTheme(savedTheme);
+    }
+
+    function toggleTheme() {
+        const currentTheme = document.documentElement.getAttribute('data-bs-theme') || 'light';
+        const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+        setTheme(newTheme);
+        localStorage.setItem('theme', newTheme);
+    }
+
+    function setTheme(theme) {
+        document.documentElement.setAttribute('data-bs-theme', theme);
+        const icon = themeToggle.querySelector('i');
+        if (theme === 'dark') {
+            icon.classList.remove('fa-moon');
+            icon.classList.add('fa-sun');
+            themeToggle.setAttribute('aria-label', 'Switch to light mode');
+        } else {
+            icon.classList.remove('fa-sun');
+            icon.classList.add('fa-moon');
+            themeToggle.setAttribute('aria-label', 'Switch to dark mode');
+        }
+    }
+
+    // Alert functions
     function showAlert(message, type = 'danger') {
-        alertArea.innerHTML = `
-            <div class="alert alert-${type} alert-dismissible fade show" role="alert">
-                ${message}
+        const alertId = 'alert-' + Date.now();
+        const alertHTML = `
+            <div id="${alertId}" class="alert alert-${type} alert-dismissible fade show" role="alert">
+                <div class="d-flex align-items-center">
+                    ${type === 'success' ? '<i class="fas fa-check-circle me-2"></i>' : '<i class="fas fa-exclamation-circle me-2"></i>'}
+                    <span>${message}</span>
+                </div>
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
         `;
+        alertArea.innerHTML = alertHTML;
+
+        // Auto-dismiss after 5 seconds for success alerts
+        if (type === 'success') {
+            setTimeout(() => {
+                const alert = document.getElementById(alertId);
+                if (alert) {
+                    alert.remove();
+                }
+            }, 5000);
+        }
     }
 
+    // File handling
     function handleFile(file) {
+        // Validate file
+        if (!file) {
+            showAlert('No file selected', 'danger');
+            return;
+        }
+
         // Show progress bar
         progressBar.classList.remove('d-none');
         progressBarInner.style.width = '0%';
@@ -63,20 +134,32 @@ document.addEventListener('DOMContentLoaded', function() {
         const formData = new FormData();
         formData.append('file', file);
 
+        // Hide feature section and clear previous results
+        featureSection.classList.add('d-none');
+        previewArea.classList.add('d-none');
+        alertArea.innerHTML = '';
+
         // Simulate upload progress
         let progress = 0;
         const progressInterval = setInterval(() => {
-            progress += 10;
-            if (progress <= 90) {
-                progressBarInner.style.width = `${progress}%`;
-            }
+            progress += Math.random() * 30;
+            if (progress > 100) progress = 100;
+            progressBarInner.style.width = `${Math.min(progress, 90)}%`;
         }, 200);
 
+        // Fetch conversion
         fetch('/convert', {
             method: 'POST',
             body: formData
         })
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                return response.json().then(data => {
+                    throw new Error(data.error || `Server error: ${response.status}`);
+                });
+            }
+            return response.json();
+        })
         .then(data => {
             clearInterval(progressInterval);
             progressBarInner.style.width = '100%';
@@ -85,32 +168,75 @@ document.addEventListener('DOMContentLoaded', function() {
                 throw new Error(data.error);
             }
 
+            if (!data.success || !data.markdown) {
+                throw new Error('Conversion failed: Empty response');
+            }
+
             // Show preview
             markdownContent.textContent = data.markdown;
             previewArea.classList.remove('d-none');
 
             // Setup download button
-            downloadBtn.onclick = () => {
-                const blob = new Blob([data.markdown], { type: 'text/markdown' });
-                const url = window.URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = 'converted.md';
-                document.body.appendChild(a);
-                a.click();
-                window.URL.revokeObjectURL(url);
-                document.body.removeChild(a);
-            };
+            downloadBtn.onclick = () => downloadMarkdown(data.markdown, file.name);
+
+            // Setup copy button
+            copyBtn.onclick = () => copyToClipboard(data.markdown);
 
             showAlert('File converted successfully!', 'success');
         })
         .catch(error => {
-            showAlert(error.message);
+            clearInterval(progressInterval);
+            showAlert(error.message || 'An error occurred during conversion', 'danger');
         })
         .finally(() => {
             setTimeout(() => {
                 progressBar.classList.add('d-none');
+                progressBarInner.style.width = '0%';
             }, 1000);
+            // Reset file input
+            fileInput.value = '';
         });
+    }
+
+    // Download markdown
+    function downloadMarkdown(content, originalFileName) {
+        const baseName = originalFileName.split('.')[0] || 'converted';
+        const blob = new Blob([content], { type: 'text/markdown; charset=utf-8' });
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `${baseName}.md`;
+        document.body.appendChild(link);
+        link.click();
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(link);
+        showAlert('File downloaded successfully!', 'success');
+    }
+
+    // Copy to clipboard
+    function copyToClipboard(content) {
+        if (!navigator.clipboard) {
+            // Fallback for older browsers
+            const textArea = document.createElement('textarea');
+            textArea.value = content;
+            document.body.appendChild(textArea);
+            textArea.select();
+            try {
+                document.execCommand('copy');
+                showAlert('Copied to clipboard!', 'success');
+            } catch (err) {
+                showAlert('Failed to copy to clipboard', 'danger');
+            }
+            document.body.removeChild(textArea);
+            return;
+        }
+
+        navigator.clipboard.writeText(content)
+            .then(() => {
+                showAlert('Copied to clipboard!', 'success');
+            })
+            .catch(() => {
+                showAlert('Failed to copy to clipboard', 'danger');
+            });
     }
 });
