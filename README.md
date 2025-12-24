@@ -15,8 +15,6 @@ A [web-based](https://file2md.maheshrijal.com) file converter that transforms va
 - PowerPoint (.pptx)
 - Word (.docx)
 - Excel (.xlsx)
-- Images (EXIF metadata, and OCR)
-- Audio (EXIF metadata, and speech transcription)
 - HTML (special handling of Wikipedia, etc.)
 - Various other text-based formats (csv, json, xml, etc.)
 

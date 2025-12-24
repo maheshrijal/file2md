@@ -131,7 +131,7 @@ body {
     background-color: var(--bg-secondary);
     position: relative;
     overflow: hidden;
-    padding: 3rem 2rem !important;
+    padding: 2rem 1.5rem;
 }
 
 .upload-area::before {
@@ -165,7 +165,7 @@ body {
 }
 
 .upload-icon {
-    font-size: 2.5rem;
+    font-size: 2.25rem;
     color: var(--color-primary);
     transition: all 0.3s ease;
 }
@@ -183,7 +183,7 @@ body {
 .supported-formats-grid {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.75rem;
+    gap: 0.5rem;
     justify-content: center;
 }
 
@@ -222,7 +222,7 @@ body {
     overflow-y: auto;
     font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
     font-size: 0.9rem;
-    line-height: 1.6;
+    line-height: 1.5;
     word-break: break-word;
     border: 1px solid var(--border-color);
 }
@@ -297,6 +297,11 @@ body {
     border-radius: 0.75rem;
     transition: all 0.3s ease;
     text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
 }
 
 .feature-card:hover {
@@ -364,6 +369,16 @@ h1, h2, h3, h4, h5, h6 {
     color: var(--text-primary);
 }
 
+.hero-title {
+    font-size: 2.25rem;
+    line-height: 1.2;
+    letter-spacing: -0.3px;
+}
+
+.hero-subtitle {
+    font-size: 1.05rem;
+}
+
 a {
     color: var(--color-primary);
     text-decoration: none;
@@ -401,16 +416,16 @@ a:hover {
 
 /* Responsive */
 @media (max-width: 768px) {
-    h1.display-4 {
-        font-size: 2rem;
+    .hero-title {
+        font-size: 1.9rem;
     }
 
-    .upload-icon {
-        font-size: 2.5rem;
+    .hero-subtitle {
+        font-size: 0.95rem;
     }
 
     .upload-area {
-        padding: 2rem 1.5rem !important;
+        padding: 1.5rem 1.25rem;
     }
 
     .upload-icon {

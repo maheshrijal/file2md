@@ -97,23 +97,38 @@ document.addEventListener('DOMContentLoaded', function() {
     // Alert functions
     function showAlert(message, type = 'danger') {
         const alertId = 'alert-' + Date.now();
-        const alertHTML = `
-            <div id="${alertId}" class="alert alert-${type} alert-dismissible fade show" role="alert">
-                <div class="d-flex align-items-center">
-                    ${type === 'success' ? '<i class="fas fa-check-circle me-2"></i>' : '<i class="fas fa-exclamation-circle me-2"></i>'}
-                    <span>${message}</span>
-                </div>
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-        `;
-        alertArea.innerHTML = alertHTML;
+        const alert = document.createElement('div');
+        alert.id = alertId;
+        alert.className = `alert alert-${type} alert-dismissible fade show`;
+        alert.setAttribute('role', 'alert');
+
+        const content = document.createElement('div');
+        content.className = 'd-flex align-items-center';
+
+        const icon = document.createElement('i');
+        icon.className = type === 'success'
+            ? 'fas fa-check-circle me-2'
+            : 'fas fa-exclamation-circle me-2';
+
+        const text = document.createElement('span');
+        text.textContent = message;
+
+        const closeButton = document.createElement('button');
+        closeButton.type = 'button';
+        closeButton.className = 'btn-close';
+        closeButton.setAttribute('data-bs-dismiss', 'alert');
+        closeButton.setAttribute('aria-label', 'Close');
+
+        content.append(icon, text);
+        alert.append(content, closeButton);
+        alertArea.replaceChildren(alert);
 
         // Auto-dismiss after 5 seconds for success alerts
         if (type === 'success') {
             setTimeout(() => {
-                const alert = document.getElementById(alertId);
-                if (alert) {
-                    alert.remove();
+                const existingAlert = document.getElementById(alertId);
+                if (existingAlert) {
+                    existingAlert.remove();
                 }
             }, 5000);
         }
@@ -130,7 +145,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // Show progress bar
         progressBar.classList.remove('d-none');
         progressBarInner.style.width = '0%';
-        
+
         const formData = new FormData();
         formData.append('file', file);
 
@@ -163,7 +178,7 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(data => {
             clearInterval(progressInterval);
             progressBarInner.style.width = '100%';
-            
+
             if (data.error) {
                 throw new Error(data.error);
             }
@@ -187,6 +202,8 @@ document.addEventListener('DOMContentLoaded', function() {
         .catch(error => {
             clearInterval(progressInterval);
             showAlert(error.message || 'An error occurred during conversion', 'danger');
+            featureSection.classList.remove('d-none');
+            previewArea.classList.add('d-none');
         })
         .finally(() => {
             setTimeout(() => {
@@ -200,7 +217,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Download markdown
     function downloadMarkdown(content, originalFileName) {
-        const baseName = originalFileName.split('.')[0] || 'converted';
+        const baseName = originalFileName.replace(/\.[^/.]+$/, '') || 'converted';
         const blob = new Blob([content], { type: 'text/markdown; charset=utf-8' });
         const url = window.URL.createObjectURL(blob);
         const link = document.createElement('a');
