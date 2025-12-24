@@ -60,36 +60,36 @@ jobs:
         run: |
           python -m pip install --upgrade pip requests
           python - <<'PY'
-import json
-import tempfile
-from pathlib import Path
+          import json
+          import tempfile
+          from pathlib import Path
 
-import requests
+          import requests
 
-base = Path(tempfile.mkdtemp())
-samples = {
-    "sample.html": "<!doctype html><html><body><h1>Hello HTML</h1></body></html>",
-    "sample.csv": "title,value\nHello CSV,42\n",
-    "sample.json": json.dumps({"message": "Hello JSON"}),
-    "sample.xml": "<root><message>Hello XML</message></root>",
-}
+          base = Path(tempfile.mkdtemp())
+          samples = {
+              "sample.html": "<!doctype html><html><body><h1>Hello HTML</h1></body></html>",
+              "sample.csv": "title,value\nHello CSV,42\n",
+              "sample.json": json.dumps({"message": "Hello JSON"}),
+              "sample.xml": "<root><message>Hello XML</message></root>",
+          }
 
-url = "http://localhost:5050/convert"
+          url = "http://localhost:5050/convert"
 
-for name, content in samples.items():
-    path = base / name
-    path.write_text(content, encoding="utf-8")
-    with path.open("rb") as handle:
-        response = requests.post(url, files={"file": (name, handle)})
-    if response.status_code != 200:
-        raise SystemExit(f"{name}: expected 200, got {response.status_code} {response.text}")
-    payload = response.json()
-    if not payload.get("success"):
-        raise SystemExit(f"{name}: conversion failed: {payload}")
-    if not isinstance(payload.get("markdown"), str) or not payload.get("markdown", "").strip():
-        raise SystemExit(f"{name}: empty markdown output")
-print("Smoke test passed.")
-PY
+          for name, content in samples.items():
+              path = base / name
+              path.write_text(content, encoding="utf-8")
+              with path.open("rb") as handle:
+                  response = requests.post(url, files={"file": (name, handle)})
+              if response.status_code != 200:
+                  raise SystemExit(f"{name}: expected 200, got {response.status_code} {response.text}")
+              payload = response.json()
+              if not payload.get("success"):
+                  raise SystemExit(f"{name}: conversion failed: {payload}")
+              if not isinstance(payload.get("markdown"), str) or not payload.get("markdown", "").strip():
+                  raise SystemExit(f"{name}: empty markdown output")
+          print("Smoke test passed.")
+          PY
 
       - name: Stop container
         if: always()
