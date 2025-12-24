@@ -48,10 +48,19 @@ jobs:
 
       - name: Wait for server
         run: |
+          set -euo pipefail
           for i in {1..30}; do
-            if curl -fsS http://localhost:5050/ >/dev/null; then
+            status="$(docker inspect -f '{{.State.Running}}' file2md 2>/dev/null || true)"
+            if [ "$status" != "true" ]; then
+              echo "Container exited unexpectedly (running=${status:-missing})"
+              docker logs file2md
+              exit 1
+            fi
+            if curl -fsS http://localhost:5050/ >/dev/null 2>&1; then
+              echo "Server ready"
               exit 0
             fi
+            echo "Waiting for server (${i}/30)..."
             sleep 1
           done
           echo "Server did not become ready in time"

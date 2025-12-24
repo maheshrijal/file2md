@@ -7,6 +7,7 @@ POI_COMMIT = "6d42ff955ad13a79ebafdaaeffa5617880c00d3b"
 POI_BASE = f"https://raw.githubusercontent.com/apache/poi/{POI_COMMIT}"
 
 REMOTE_SAMPLES = {
+    "47304.doc": f"{POI_BASE}/test-data/document/47304.doc",
     "hello-world-unsigned.docx": f"{POI_BASE}/test-data/xmldsign/hello-world-unsigned.docx",
     "hello-world-unsigned.pptx": f"{POI_BASE}/test-data/xmldsign/hello-world-unsigned.pptx",
     "hello-world-unsigned.xlsx": f"{POI_BASE}/test-data/xmldsign/hello-world-unsigned.xlsx",
