@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" data-bs-theme="dark">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,14 +11,15 @@
     <meta property="og:type" content="website">
     <meta property="og:site_name" content="File to Markdown Converter">
     <title>File to Markdown Converter - Convert Documents to Markdown Format</title>
-    
+
     <!-- Bootstrap CSS -->
-    <link href="https://cdn.replit.com/agent/bootstrap-agent-dark-theme.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Font Awesome -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <!-- Custom CSS -->
     <link href="{{ url_for('static', filename='css/custom.css') }}" rel="stylesheet">
-<!-- JSON-LD structured data -->
+
+    <!-- JSON-LD structured data -->
     <script type="application/ld+json">
     {
         "@context": "https://schema.org",
@@ -43,64 +44,157 @@
     </script>
 </head>
 <body>
-    <div class="container py-5">
-        <h1 class="text-center mb-5">File to Markdown Converter</h1>
-        
-        <div class="row justify-content-center">
-            <div class="col-md-8">
-                <!-- File Upload Area -->
-                <div class="upload-area mb-4 p-5 rounded text-center" id="dropZone" 
-                     role="button" 
-                     aria-label="Upload file area. Click or drag and drop your file here"
-                     tabindex="0">
-                    <i class="fas fa-cloud-upload-alt fa-3x mb-3" aria-hidden="true"></i>
-                    <h2>Drag & Drop or Click to Upload</h2>
-                    <p class="text-muted">
-                        Supported formats: 
-                        <span class="supported-formats">
-                            PDF, PPTX, DOCX, XLSX, Images, Audio, HTML, CSV, JSON, XML
-                        </span>
+    <!-- Navigation Header -->
+    <nav class="navbar navbar-expand-lg navbar-light sticky-top header-nav">
+        <div class="container-fluid px-4">
+            <a class="navbar-brand fw-bold" href="#">
+                <i class="fas fa-file-markdown me-2"></i>File2Markdown
+            </a>
+            <button class="btn btn-outline-primary theme-toggle" id="themeToggle" aria-label="Toggle dark/light theme">
+                <i class="fas fa-moon"></i>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="min-vh-100 d-flex flex-column">
+        <div class="container py-4 flex-grow-1">
+            <!-- Hero Section -->
+            <div class="row justify-content-center mb-3">
+                <div class="col-lg-8 text-center">
+                    <h1 class="fw-bold mb-2 hero-title">
+                        <span class="gradient-text">File to Markdown</span>
+                    </h1>
+                    <p class="lead text-muted mb-0 hero-subtitle">
+                        Convert any document to clean, readable Markdown format instantly
                     </p>
-                    <input type="file" id="fileInput" class="d-none" 
-                           aria-label="File input"
-                           accept=".pdf,.docx,.pptx,.xlsx,.png,.jpg,.jpeg,.gif,.mp3,.wav,.html,.csv,.json,.xml">
                 </div>
+            </div>
 
-                <!-- Progress Bar -->
-                <div class="progress mb-4 d-none" id="progressBar">
-                    <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar"></div>
-                </div>
+            <!-- Main Content Area -->
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <!-- File Upload Card -->
+                    <div class="card card-elevated mb-4 border-0">
+                        <div class="card-body p-0">
+                            <!-- Upload Area -->
+                            <div class="upload-area rounded-top text-center" id="dropZone"
+                                 role="button"
+                                 aria-label="Upload file area. Click or drag and drop your file here"
+                                 tabindex="0">
+                                <div class="upload-icon mb-3">
+                                    <i class="fas fa-cloud-upload-alt"></i>
+                                </div>
+                                <h2 class="h5 mb-1">Drag & Drop Your File</h2>
+                                <p class="text-muted mb-3 small">or click to browse from your computer</p>
+                                <input type="file" id="fileInput" class="d-none"
+                                       aria-label="File input"
+                                       accept=".pdf,.docx,.pptx,.xlsx,.html,.csv,.json,.xml">
 
-                <!-- Alert Messages -->
-                <div id="alertArea"></div>
+                                <!-- Supported Formats -->
+                                <div class="mt-3 pt-3 border-top">
+                                    <p class="small text-muted mb-2">Supported formats:</p>
+                                    <div class="supported-formats-grid">
+                                        <span class="badge badge-format">PDF</span>
+                                        <span class="badge badge-format">DOCX</span>
+                                        <span class="badge badge-format">PPTX</span>
+                                        <span class="badge badge-format">XLSX</span>
+                                        <span class="badge badge-format">HTML</span>
+                                        <span class="badge badge-format">CSV</span>
+                                        <span class="badge badge-format">JSON</span>
+                                        <span class="badge badge-format">XML</span>
+                                    </div>
+                                </div>
+                            </div>
 
-                <!-- Preview Area -->
-                <div class="card mb-4 d-none" id="previewArea">
-                    <div class="card-header d-flex justify-content-between align-items-center">
-                        <h5 class="mb-0">Markdown Preview</h5>
-                        <button class="btn btn-primary btn-sm" id="downloadBtn">
-                            <i class="fas fa-download me-2"></i>Download
-                        </button>
+                            <!-- Progress Bar -->
+                            <div class="progress d-none rounded-0 rounded-bottom-0" id="progressBar" style="height: 4px;">
+                                <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 0%"></div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="card-body">
-                        <pre class="markdown-preview"><code id="markdownContent"></code></pre>
+
+                    <!-- Alert Messages -->
+                    <div id="alertArea"></div>
+
+                    <!-- Preview Area -->
+                    <div class="card card-elevated border-0 d-none" id="previewArea">
+                        <div class="card-header d-flex justify-content-between align-items-center py-2">
+                            <div>
+                                <h5 class="mb-0">
+                                    <i class="fas fa-file-lines me-2"></i>Markdown Preview
+                                </h5>
+                            </div>
+                            <div>
+                                <button class="btn btn-sm btn-outline-secondary me-2" id="copyBtn" title="Copy to clipboard">
+                                    <i class="fas fa-copy me-1"></i>Copy
+                                </button>
+                                <button class="btn btn-sm btn-primary" id="downloadBtn">
+                                    <i class="fas fa-download me-1"></i>Download
+                                </button>
+                            </div>
+                        </div>
+                        <div class="card-body p-0">
+                            <pre class="markdown-preview p-3 m-0"><code id="markdownContent"></code></pre>
+                        </div>
+                    </div>
+
+                    <!-- Features Section (shown initially) -->
+                    <div id="featureSection" class="mt-4">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <div class="feature-card p-3 rounded h-100">
+                                    <i class="fas fa-bolt text-primary mb-2"></i>
+                                    <h5 class="mb-2">Fast & Efficient</h5>
+                                    <p class="small text-muted mb-0">Instant conversion without any server uploads</p>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="feature-card p-3 rounded h-100">
+                                    <i class="fas fa-shield-alt text-primary mb-2"></i>
+                                    <h5 class="mb-2">Secure & Private</h5>
+                                    <p class="small text-muted mb-0">Files are processed locally in your browser</p>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="feature-card p-3 rounded h-100">
+                                    <i class="fas fa-file-check text-primary mb-2"></i>
+                                    <h5 class="mb-2">Multiple Formats</h5>
+                                    <p class="small text-muted mb-0">Supports multiple formats including documents and data files</p>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="feature-card p-3 rounded h-100">
+                                    <i class="fas fa-paint-palette text-primary mb-2"></i>
+                                    <h5 class="mb-2">Beautiful Output</h5>
+                                    <p class="small text-muted mb-0">Clean, readable Markdown with perfect formatting</p>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- Footer -->
-    <footer class="footer mt-auto py-3 bg-dark">
-        <div class="container text-center">
-            <span class="text-muted">
-                This project is open source on 
-                <a href="https://github.com/maheshrijal/file2md" target="_blank" rel="noopener noreferrer">
-                    <i class="fab fa-github"></i> GitHub
-                </a>
-            </span>
-        </div>
-    </footer>
+        <!-- Footer -->
+        <footer class="footer mt-auto py-4 border-top">
+            <div class="container-fluid px-4">
+                <div class="row justify-content-between align-items-center">
+                    <div class="col-auto">
+                        <span class="text-muted small">
+                            Open source on
+                            <a href="https://github.com/maheshrijal/file2md" target="_blank" rel="noopener noreferrer" class="footer-link">
+                                <i class="fab fa-github"></i> GitHub
+                            </a>
+                        </span>
+                    </div>
+                    <div class="col-auto">
+                        <span class="text-muted small">&copy; 2025 File2Markdown</span>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </main>
 
     <!-- Bootstrap Bundle with Popper -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
