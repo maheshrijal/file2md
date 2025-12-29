@@ -21,7 +21,7 @@ markdown = "^3.10"
 python-docx = "^1.2.0"
 
 [tool.poetry.group.dev.dependencies]
-pytest = "^8.3.0"
+pytest = "^9.0.2"
 pytest-cov = "^5.0.0"
 
 [build-system]
