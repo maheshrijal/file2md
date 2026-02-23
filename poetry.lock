@@ -932,14 +932,14 @@ six = ">=1.15,<2"
 
 [[package]]
 name = "markitdown"
-version = "0.1.4"
+version = "0.1.5"
 description = "Utility tool for converting various files to Markdown"
 optional = false
 python-versions = ">=3.10"
 groups = ["main"]
 files = [
-    {file = "markitdown-0.1.4-py3-none-any.whl", hash = "sha256:d7f3805716b22545f693d355e28e89584226c0614b3b80b7c4a3f825f068492d"},
-    {file = "markitdown-0.1.4.tar.gz", hash = "sha256:e72a481d1a50c82ff744e85e3289f79a940c5d0ad5ffa2b37c33de814c195bb1"},
+    {file = "markitdown-0.1.5-py3-none-any.whl", hash = "sha256:5180a9a841e20fc01c2c09dbc5d039638429bbebcdc2af1b2615c3c427840434"},
+    {file = "markitdown-0.1.5.tar.gz", hash = "sha256:4c956ff1528bf15e1814542035ec96e989206d19d311bb799f4df973ecafc31a"},
 ]
 
 [package.dependencies]
@@ -953,10 +953,10 @@ magika = ">=0.6.1,<0.7.0"
 mammoth = {version = ">=1.11.0,<1.12.0", optional = true, markers = "extra == \"all\""}
 markdownify = "*"
 olefile = {version = "*", optional = true, markers = "extra == \"all\""}
-onnxruntime = {version = "<=1.20.1", markers = "sys_platform == \"win32\""}
 openpyxl = {version = "*", optional = true, markers = "extra == \"all\""}
 pandas = {version = "*", optional = true, markers = "extra == \"all\""}
-pdfminer-six = {version = ">=20251107", optional = true, markers = "extra == \"all\""}
+pdfminer-six = {version = ">=20251230", optional = true, markers = "extra == \"all\""}
+pdfplumber = {version = ">=0.11.9", optional = true, markers = "extra == \"all\""}
 pydub = {version = "*", optional = true, markers = "extra == \"all\""}
 python-pptx = {version = "*", optional = true, markers = "extra == \"all\""}
 requests = "*"
@@ -965,12 +965,12 @@ xlrd = {version = "*", optional = true, markers = "extra == \"all\""}
 youtube-transcript-api = {version = ">=1.0.0,<1.1.0", optional = true, markers = "extra == \"all\""}
 
 [package.extras]
-all = ["azure-ai-documentintelligence", "azure-identity", "lxml", "mammoth (>=1.11.0,<1.12.0)", "olefile", "openpyxl", "pandas", "pdfminer-six (>=20251107)", "pydub", "python-pptx", "speechrecognition", "xlrd", "youtube-transcript-api (>=1.0.0,<1.1.0)"]
+all = ["azure-ai-documentintelligence", "azure-identity", "lxml", "mammoth (>=1.11.0,<1.12.0)", "olefile", "openpyxl", "pandas", "pdfminer-six (>=20251230)", "pdfplumber (>=0.11.9)", "pydub", "python-pptx", "speechrecognition", "xlrd", "youtube-transcript-api (>=1.0.0,<1.1.0)"]
 audio-transcription = ["pydub", "speechrecognition"]
 az-doc-intel = ["azure-ai-documentintelligence", "azure-identity"]
 docx = ["lxml", "mammoth (>=1.11.0,<1.12.0)"]
 outlook = ["olefile"]
-pdf = ["pdfminer-six"]
+pdf = ["pdfminer-six (>=20251230)", "pdfplumber (>=0.11.9)"]
 pptx = ["python-pptx"]
 xls = ["pandas", "xlrd"]
 xlsx = ["openpyxl", "pandas"]
@@ -1335,14 +1335,14 @@ xml = ["lxml (>=4.9.2)"]
 
 [[package]]
 name = "pdfminer-six"
-version = "20251107"
+version = "20251230"
 description = "PDF parser and analyzer"
 optional = false
-python-versions = ">=3.9"
+python-versions = ">=3.10"
 groups = ["main"]
 files = [
-    {file = "pdfminer_six-20251107-py3-none-any.whl", hash = "sha256:c09df33e4cbe6b26b2a79248a4ffcccafaa5c5d39c9fff0e6e81567f165b5401"},
-    {file = "pdfminer_six-20251107.tar.gz", hash = "sha256:5fb0c553799c591777f22c0c72b77fc2522d7d10c70654e25f4c5f1fd996e008"},
+    {file = "pdfminer_six-20251230-py3-none-any.whl", hash = "sha256:9ff2e3466a7dfc6de6fd779478850b6b7c2d9e9405aa2a5869376a822771f485"},
+    {file = "pdfminer_six-20251230.tar.gz", hash = "sha256:e8f68a14c57e00c2d7276d26519ea64be1b48f91db1cdc776faa80528ca06c1e"},
 ]
 
 [package.dependencies]
@@ -1350,9 +1350,24 @@ charset-normalizer = ">=2.0.0"
 cryptography = ">=36.0.0"
 
 [package.extras]
-dev = ["atheris ; python_version < \"3.12\"", "black", "mypy (==0.931)", "nox", "pytest"]
-docs = ["sphinx", "sphinx-argparse"]
 image = ["Pillow"]
+
+[[package]]
+name = "pdfplumber"
+version = "0.11.9"
+description = "Plumb a PDF for detailed information about each char, rectangle, and line."
+optional = false
+python-versions = ">=3.8"
+groups = ["main"]
+files = [
+    {file = "pdfplumber-0.11.9-py3-none-any.whl", hash = "sha256:33ec5580959ba524e9100138746e090879504c42955df1b8a997604dd326c443"},
+    {file = "pdfplumber-0.11.9.tar.gz", hash = "sha256:481224b678b2bbdbf376e2c39bf914144eef7c3d301b4a28eebf0f7f6109d6dc"},
+]
+
+[package.dependencies]
+"pdfminer.six" = "20251230"
+Pillow = ">=9.1"
+pypdfium2 = ">=4.18.0"
 
 [[package]]
 name = "pillow"
@@ -1598,6 +1613,38 @@ dev = ["black", "flit", "pip-tools", "pre-commit (<2.18.0)", "pytest-cov", "whee
 docs = ["myst_parser", "sphinx", "sphinx_rtd_theme"]
 full = ["Pillow", "PyCryptodome"]
 image = ["Pillow"]
+
+[[package]]
+name = "pypdfium2"
+version = "5.5.0"
+description = "Python bindings to PDFium"
+optional = false
+python-versions = ">=3.6"
+groups = ["main"]
+files = [
+    {file = "pypdfium2-5.5.0-py3-none-android_23_arm64_v8a.whl", hash = "sha256:414f0b4aef7413e04df7355043fb752f2efb6f9777e04fd880d302612dacf89f"},
+    {file = "pypdfium2-5.5.0-py3-none-android_23_armeabi_v7a.whl", hash = "sha256:126ff8b131d12f16ce96b3e85b7f413e5073212be06b571f157fe11ad221c274"},
+    {file = "pypdfium2-5.5.0-py3-none-macosx_11_0_arm64.whl", hash = "sha256:0770bd3f0be5c68443fc4017e43b1b1fe8f36877481cab70fd29b68b2c362e1b"},
+    {file = "pypdfium2-5.5.0-py3-none-macosx_11_0_x86_64.whl", hash = "sha256:5ab41a3b9953d9be44be35c36a2340f1d67c602db98a0d6f70006610871ae43a"},
+    {file = "pypdfium2-5.5.0-py3-none-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:2492a22c3126a004cee2fa208ea4aa03ede2c7e205d05814934ab18f83d073e9"},
+    {file = "pypdfium2-5.5.0-py3-none-manylinux_2_17_armv7l.manylinux2014_armv7l.whl", hash = "sha256:83ff93e08b1fadb00040564e2eccc99147fc1a632ba5daff745126b373d78446"},
+    {file = "pypdfium2-5.5.0-py3-none-manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:b7e85de3332bedf8e5f157c248063b4eaf968660e1e490353b6e581d9f96a4c6"},
+    {file = "pypdfium2-5.5.0-py3-none-manylinux_2_17_ppc64le.manylinux2014_ppc64le.whl", hash = "sha256:e258365f34b6e334bb415e44dd9b1ee78a6e525bf854a1e74af67af7ede7555b"},
+    {file = "pypdfium2-5.5.0-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:bec21d833404ca771f02fa5cefb0b73e2148f05cbdb3b5b9989bdd51d9b5cbac"},
+    {file = "pypdfium2-5.5.0-py3-none-manylinux_2_27_s390x.manylinux_2_28_s390x.whl", hash = "sha256:1dd6ccbe1b5e2e778e8b021e47f9485b4fd42eaa6c9bdda2631641724e1fcc04"},
+    {file = "pypdfium2-5.5.0-py3-none-manylinux_2_38_riscv64.manylinux_2_39_riscv64.whl", hash = "sha256:da3eada345570cec5e34872d1472d4ac542f0e650ccdb6c2eac08ae1a5f07c82"},
+    {file = "pypdfium2-5.5.0-py3-none-musllinux_1_2_aarch64.whl", hash = "sha256:a087fb4088c7433fd3d78833dbe42cfb66df3d5ac98e3edf66110520fb33c0f0"},
+    {file = "pypdfium2-5.5.0-py3-none-musllinux_1_2_armv7l.whl", hash = "sha256:e6418cdc500ef85a90319f9bc7f1c54fc133460379f509429403225d8a4c157f"},
+    {file = "pypdfium2-5.5.0-py3-none-musllinux_1_2_i686.whl", hash = "sha256:8f7b66eedfac26eb2df4b00936e081b0a1c76fb8ee1c12639d85c2e73b0769ef"},
+    {file = "pypdfium2-5.5.0-py3-none-musllinux_1_2_ppc64le.whl", hash = "sha256:faea3246591ce2ea6218cd06679071275e3c65f11c3f5c9091eb7fb07610af6a"},
+    {file = "pypdfium2-5.5.0-py3-none-musllinux_1_2_riscv64.whl", hash = "sha256:aba26d404b51a9de3d3e80c867a95c71abf1c79552001ae22707451e59186b3d"},
+    {file = "pypdfium2-5.5.0-py3-none-musllinux_1_2_s390x.whl", hash = "sha256:e0fa8f81679e6e71f26806f4db853571ee6435dc3bde7a46acdd182ef886a5b9"},
+    {file = "pypdfium2-5.5.0-py3-none-musllinux_1_2_x86_64.whl", hash = "sha256:ee22df3376d350eeb64d2002a1071e3a02c0d874c557a3cd8229a8fc572cdaac"},
+    {file = "pypdfium2-5.5.0-py3-none-win32.whl", hash = "sha256:ec62a00223d1222d2f35c0866dd79cdc24da070738544cdf51b17d332d4a7389"},
+    {file = "pypdfium2-5.5.0-py3-none-win_amd64.whl", hash = "sha256:15c32fbeebb5198afa785dd03e98906ebb4eded9ef8862e10f833c37b4a18786"},
+    {file = "pypdfium2-5.5.0-py3-none-win_arm64.whl", hash = "sha256:f618af0884c16c768539c44933a255039131dbbf39d68eded020da4f14958d73"},
+    {file = "pypdfium2-5.5.0.tar.gz", hash = "sha256:3283c61f54c3c546d140da201ef48a51c18b0ad54293091a010029ac13ece23a"},
+]
 
 [[package]]
 name = "pyreadline3"
@@ -1989,4 +2036,4 @@ requests = "*"
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.11,<3.14"
-content-hash = "2387785fb5af62353d1dc5cae7625026fecd1b2b81cbf5c1a4e19f3fffa673a7"
+content-hash = "2c17941e52dee9776e55e6ca1c2cabbdf48d67f543c0c58505f95d68c0e208a5"
