@@ -54,6 +54,12 @@ jobs:
       - name: Build image
         run: docker build -t file2md:ci .
 
+      - name: Verify container TLS trust bundle
+        run: |
+          docker run --rm --entrypoint python \
+            -v "$PWD/tests/test_tls_trust.py:/tmp/test_tls_trust.py:ro" \
+            file2md:ci -c 'import runpy; runpy.run_path("/tmp/test_tls_trust.py")["test_certifi_does_not_trust_compromised_emsign_root"]()'
+
       - name: Start container
         run: docker run -d -p 5050:5000 --name file2md file2md:ci
 
