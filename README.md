@@ -38,3 +38,15 @@ Open your browser and go to:
 ```
 http://localhost:5000
 ```
+
+## Security updates
+
+Version 0.1.1 updates the TLS trust bundle for the eMudhra/emSign CA key
+compromise ([certifi advisory](https://github.com/advisories/GHSA-6q48-6c7w-9gw2))
+and refreshes dependencies affected by GitHub security alerts. The unused,
+unmaintained PyPDF2 dependency has been removed; PDF conversion still uses
+MarkItDown's PDF converter.
+
+Container builds install runtime dependencies from `poetry.lock`. To receive
+these fixes, pull the rebuilt `v.0.1.1` (or `latest`) image and recreate existing
+containers. Updating the repository does not update already running containers.
